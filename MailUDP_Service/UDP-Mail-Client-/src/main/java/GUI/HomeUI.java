@@ -10,12 +10,16 @@ import Model.Request;
 import com.mycompany.udpsocketclient.UDPSocketClient;
 import static com.mycompany.udpsocketclient.UDPSocketClient.send;
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -23,11 +27,13 @@ import javax.swing.table.DefaultTableModel;
  * @author iemmeiemi
  */
 public class HomeUI extends javax.swing.JFrame {
+
     ArrayList<Mail> list;
     DatagramSocket clientSocket;
     InetAddress serverAddress;
     Account acc;
     private DefaultTableModel model;
+
     /**
      * Creates new form HomeUI
      */
@@ -50,14 +56,13 @@ public class HomeUI extends javax.swing.JFrame {
     }
 
     public void loadData() {
-        for (Mail mail :list) {
-            model.addRow( new Object[] {
+        for (Mail mail : list) {
+            model.addRow(new Object[]{
                 mail.getTitle(), mail.getContent()
             });
         }
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -375,27 +380,55 @@ public class HomeUI extends javax.swing.JFrame {
 
     private void btnHomeSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeSendActionPerformed
         // TODO add your handling code here:
-        ((CardLayout)getContentPane().getLayout()).show(getContentPane(), "send");
+        ((CardLayout) getContentPane().getLayout()).show(getContentPane(), "send");
     }//GEN-LAST:event_btnHomeSendActionPerformed
 
     private void btnHomeProfile2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeProfile2ActionPerformed
         // TODO add your handling code here:
-        ((CardLayout)getContentPane().getLayout()).show(getContentPane(), "profile");
+        ((CardLayout) getContentPane().getLayout()).show(getContentPane(), "profile");
     }//GEN-LAST:event_btnHomeProfile2ActionPerformed
 
     private void seeMailDetail(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_seeMailDetail
-        // TODO add your handling code here:
-        int selectedRow = tbMail.getSelectedRow(); // Lấy chỉ số dòng đã chọn
+        // Lấy chỉ số dòng đã chọn
+        int selectedRow = tbMail.getSelectedRow();
         if (selectedRow >= 0) {
             String title = (String) model.getValueAt(selectedRow, 0); // Lấy tiêu đề
             String content = (String) model.getValueAt(selectedRow, 1); // Lấy nội dung
-            JOptionPane.showMessageDialog(this, "Title: " + title + "\nContent: " + content);
+
+            // Kiểm tra và thay thế đuôi của title
+            if (title.endsWith(".txt")) {
+                if (title.startsWith("dangkytinchi")) {
+                    title = title.replace(".txt", "@vku.udn.vn");
+                } else {
+                    title = title.replace(".txt", "@gmail.com");
+                }
+            }
+
+            // Tạo JTextArea để hiển thị tiêu đề và nội dung
+            JTextArea textArea = new JTextArea();
+            textArea.setEditable(false); // Không cho phép chỉnh sửa nội dung
+            textArea.setText("From: " + title + "\n\nTitle:\n" + content); // Hiển thị tiêu đề và nội dung
+            textArea.setLineWrap(true); // Tự động xuống dòng
+            textArea.setWrapStyleWord(true); // Xuống dòng theo từ
+            textArea.setFont(new Font("Arial", Font.PLAIN, 14)); // Font đẹp và dễ đọc
+
+            // Đặt JTextArea trong JScrollPane để thêm thanh cuộn nếu cần
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            scrollPane.setPreferredSize(new Dimension(650, 300)); // Kích thước hiển thị hợp lý
+
+            // Hiển thị JOptionPane không có biểu tượng cảnh báo
+            JOptionPane.showMessageDialog(
+                    this,
+                    scrollPane,
+                    "Mail Detail",
+                    JOptionPane.PLAIN_MESSAGE // Không hiển thị biểu tượng
+            );
         }
     }//GEN-LAST:event_seeMailDetail
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
         // TODO add your handling code here:
-        String content = "Sent at: "+ new Date() +"\n" + tfSendMail.getText();
+        String content = "Sent at: " + new Date() + "\n" + tfSendMail.getText();
         String title = tfTitle.getText();
         String receiver = tfReceiver.getText();
         Mail m = new Mail(title, content, acc.getEmail(), receiver);
@@ -404,7 +437,7 @@ public class HomeUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSendActionPerformed
 
     public void sendMailResponse(Boolean status) {
-        if(status) {
+        if (status) {
             showDialog("Mail Send", "Successfully!");
             tfSendMail.setText("");
             tfReceiver.setText("");
@@ -414,11 +447,11 @@ public class HomeUI extends javax.swing.JFrame {
 
         }
     }
-    
+
     public void showDialog(String title, String content) {
         JOptionPane.showMessageDialog(this, "Title: " + title + "\nContent: " + content);
     }
-    
+
     private void tfReceiverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfReceiverActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_tfReceiverActionPerformed
@@ -433,22 +466,22 @@ public class HomeUI extends javax.swing.JFrame {
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-         int confirm = JOptionPane.showConfirmDialog(
-                    HomeUI.this,
-                    "Are you sure you want to exit?",
-                    "Confirm Exit",
-                    JOptionPane.YES_NO_OPTION
-                );
+        int confirm = JOptionPane.showConfirmDialog(
+                HomeUI.this,
+                "Are you sure you want to exit?",
+                "Confirm Exit",
+                JOptionPane.YES_NO_OPTION
+        );
 
-                if (confirm == JOptionPane.YES_OPTION) {
-                    send(new Request("logout", acc), clientSocket, serverAddress);
-                    System.exit(0); // Đóng ứng dụng
-                }
+        if (confirm == JOptionPane.YES_OPTION) {
+            send(new Request("logout", acc), clientSocket, serverAddress);
+            System.exit(0); // Đóng ứng dụng
+        }
     }//GEN-LAST:event_formWindowClosing
 
     private void btnHomeHome1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeHome1ActionPerformed
         // TODO add your handling code here:
-        ((CardLayout)getContentPane().getLayout()).show(getContentPane(), "home");
+        ((CardLayout) getContentPane().getLayout()).show(getContentPane(), "home");
 
     }//GEN-LAST:event_btnHomeHome1ActionPerformed
 

@@ -86,7 +86,7 @@ public class FileController {
             System.out.println("Folder already exists: " + folderName);
         }
         
-        createFile(folder.getName(), "First Mail Ever!", "Thank you for using this service. We hope that you will feel comfortable...", "system", new Date());
+        createFile(folder.getName(), "A First Mail Ever!", "Thank you for using this service. We hope that you will feel comfortable...", "system", new Date());
     }
     
 //    public static Boolean createFile(String folderName, String fileName, String fileContent, String sender, Date sendedAt) {

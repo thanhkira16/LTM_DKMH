@@ -102,9 +102,9 @@ public final class ClientMain extends javax.swing.JFrame {
 
     private void updateTimeTable() {
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[] { "Tiết", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7" });
+        model.setColumnIdentifiers(new Object[]{"Tiết", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"});
         for (int i = 1; i <= 8; i++) {
-            model.addRow(new Object[] { i, "", "", "", "", "", "" });
+            model.addRow(new Object[]{i, "", "", "", "", "", ""});
         }
 
         HashSet<String> classCodes = new HashSet<>();
@@ -226,9 +226,9 @@ public final class ClientMain extends javax.swing.JFrame {
         };
 
         String[] columnNames = {
-                "Chọn", "ID", "Tên môn học", "STC", "Mã lớp", "SLSV",
-                "Thứ", "Tiết", "Tiết kết thúc", "Phòng",
-                "Giảng viên", "Ngày bắt đầu", "Ngày kết thúc"
+            "Chọn", "ID", "Tên môn học", "STC", "Mã lớp", "SLSV",
+            "Thứ", "Tiết", "Tiết kết thúc", "Phòng",
+            "Giảng viên", "Ngày bắt đầu", "Ngày kết thúc"
         };
 
         tableModel.setColumnIdentifiers(columnNames);
@@ -236,10 +236,10 @@ public final class ClientMain extends javax.swing.JFrame {
 
         for (Course course : list) {
             Object[] rowData = {
-                    false,
-                    course.getCourseId(), course.getCourseName(), course.getCredits(), course.getClassCode(),
-                    course.getStudentCount(), course.getDayOfWeek(), course.getStartPeriod(), course.getTotalPeriods(),
-                    course.getRoom(), course.getInstructor(), course.getStartDate(), course.getEndDate()
+                false,
+                course.getCourseId(), course.getCourseName(), course.getCredits(), course.getClassCode(),
+                course.getStudentCount(), course.getDayOfWeek(), course.getStartPeriod(), course.getTotalPeriods(),
+                course.getRoom(), course.getInstructor(), course.getStartDate(), course.getEndDate()
             };
             tableModel.addRow(rowData);
         }
@@ -582,9 +582,10 @@ public final class ClientMain extends javax.swing.JFrame {
             return;
         }
 
-        String folderPath = "E:\\MailUDP\\UDP-Mail-Server\\src\\main\\java\\Resources\\" + email.trim();
+        String folderPath = "E:\\DKMH\\MailUDP_Service\\UDP-Mail-Server\\src\\main\\java\\Resources\\" + email.trim();
+
         String excelFilePath = folderPath + "\\timetable.xlsx";
-        String txtFilePath = folderPath + "\\timetable.txt";
+        String txtFilePath = folderPath + "\\dangkytinchi.txt";
 
         // Tạo thư mục nếu chưa tồn tại
         File folder = new File(folderPath);
@@ -603,13 +604,12 @@ public final class ClientMain extends javax.swing.JFrame {
         if (excelFile.exists()) {
             boolean deleted = excelFile.delete(); // Xóa file Excel
             if (deleted) {
-                JOptionPane.showMessageDialog(null, "File Excel đã được xóa thành công!", "Thông báo",
-                        JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("File Excel đã được xóa thành công!"); // Log thành công
             } else {
-                JOptionPane.showMessageDialog(null, "Không thể xóa file Excel.", "Thông báo",
-                        JOptionPane.ERROR_MESSAGE);
+                System.out.println("Không thể xóa file Excel."); // Log lỗi
             }
         }
+
     }
 
     private void saveTableToExcel(JTable table, String filePath) {
@@ -641,58 +641,85 @@ public final class ClientMain extends javax.swing.JFrame {
 
         try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
             workbook.write(fileOut);
-            JOptionPane.showMessageDialog(null, "File Excel đã được lưu thành công!", "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("File Excel đã được lưu thành công!"); // Log thành công
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi lưu file Excel: " + e.getMessage(), "Thông báo",
-                    JOptionPane.ERROR_MESSAGE);
+            System.out.println("Lỗi khi lưu file Excel: " + e.getMessage()); // Log lỗi
         } finally {
             try {
                 workbook.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("Lỗi khi đóng workbook: " + e.getMessage()); // Log lỗi khi đóng workbook
             }
         }
+
     }
 
     private void convertExcelToTxt(String excelFilePath, String txtFilePath) {
-        try (FileInputStream fis = new FileInputStream(excelFilePath);
-                Workbook workbook = new XSSFWorkbook(fis);
-                OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(txtFilePath),
-                        StandardCharsets.UTF_8)) {
+        try (FileInputStream fis = new FileInputStream(excelFilePath); Workbook workbook = new XSSFWorkbook(fis); OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(txtFilePath),
+                StandardCharsets.UTF_8)) {
 
             // Ghi dòng "Sender: daotao.vku.udn.vn" ở đầu file
             writer.write("Sender: daotao.vku.udn.vn");
             writer.write(System.lineSeparator());
+            writer.write(System.lineSeparator()); // Dòng trống để tách tiêu đề
 
             Sheet sheet = workbook.getSheetAt(0); // Đọc sheet đầu tiên
-            for (Row row : sheet) {
-                StringBuilder rowContent = new StringBuilder();
-                for (Cell cell : row) {
-                    String cellContent = "";
-                    switch (cell.getCellType()) {
-                        case STRING:
-                            cellContent = cell.getStringCellValue();
-                            break;
-                        case NUMERIC:
-                            cellContent = String.valueOf(cell.getNumericCellValue());
-                            break;
-                        case BOOLEAN:
-                            cellContent = String.valueOf(cell.getBooleanCellValue());
-                            break;
-                        case FORMULA:
-                            cellContent = cell.getCellFormula();
-                            break;
-                    }
-                    cellContent = removeDiacritics(cellContent).trim(); // Loại bỏ dấu và khoảng trắng thừa
-                    rowContent.append(cellContent).append("\t"); // Ghép nội dung các ô, cách nhau bằng tab
-                }
-                writer.write(rowContent.toString().trim());
-                writer.write(System.lineSeparator()); // Xuống dòng sau mỗi hàng
+
+            // Đếm số cột
+            int numCols = 0;
+            Row headerRow = sheet.getRow(0);
+            if (headerRow != null) {
+                numCols = headerRow.getLastCellNum(); // Tổng số cột
             }
 
-            JOptionPane.showMessageDialog(null, "File TXT đã được lưu thành công dưới dạng UTF-8!", "Thông báo",
+            // Ghi dòng tiêu đề
+            StringBuilder headerContent = new StringBuilder();
+            for (Cell cell : headerRow) {
+                String cellContent = removeDiacritics(cell.getStringCellValue());
+                headerContent.append(String.format("%-20s", cellContent)); // Căn lề trái, độ rộng 20
+            }
+            writer.write(headerContent.toString().trim());
+            writer.write(System.lineSeparator());
+
+            // Ghi dữ liệu từng dòng
+            for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                Row row = sheet.getRow(rowIndex);
+                StringBuilder rowContent = new StringBuilder();
+                if (row != null) {
+                    for (int colIndex = 0; colIndex < numCols; colIndex++) {
+                        Cell cell = row.getCell(colIndex);
+                        String cellContent = "";
+                        if (cell != null) {
+                            switch (cell.getCellType()) {
+                                case STRING:
+                                    cellContent = cell.getStringCellValue();
+                                    break;
+                                case NUMERIC:
+                                    cellContent = String.valueOf(cell.getNumericCellValue());
+                                    break;
+                                case BOOLEAN:
+                                    cellContent = String.valueOf(cell.getBooleanCellValue());
+                                    break;
+                                case FORMULA:
+                                    cellContent = cell.getCellFormula();
+                                    break;
+                            }
+                        }
+                        cellContent = removeDiacritics(cellContent).trim(); // Loại bỏ dấu và khoảng trắng thừa
+                        rowContent.append(String.format("%-20s", cellContent)); // Độ rộng 20 ký tự
+                    }
+                } else {
+                    for (int colIndex = 0; colIndex < numCols; colIndex++) {
+                        rowContent.append(String.format("%-20s", "")); // Thêm ô trống
+                    }
+                }
+                writer.write(rowContent.toString().trim());
+                writer.write(System.lineSeparator());
+            }
+
+            JOptionPane.showMessageDialog(null, "File TXT đã được lưu thành công!", "Thông báo",
                     JOptionPane.INFORMATION_MESSAGE);
 
         } catch (IOException e) {
