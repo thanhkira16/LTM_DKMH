@@ -1,0 +1,1 @@
+Khi login kết nối socket với server và gọi toàn bộ dữ liệu lên một lần, sau khi gọi xong ngắt kết nối, sau đó không gọi thêm lần nào nữa
