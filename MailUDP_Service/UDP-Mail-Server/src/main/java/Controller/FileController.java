@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -86,39 +85,26 @@ public class FileController {
             System.out.println("Folder already exists: " + folderName);
         }
         
-        createFile(folder.getName(), "A First Mail Ever!", "Thank you for using this service. We hope that you will feel comfortable...", "system", new Date());
+         createFile(folder.getName(), "dangkytinchi", 
+            "Bạn chưa đăng ký tín chỉ trên hệ thống, vui lòng đăng ký.", 
+            "system", new Date());
     }
     
-//    public static Boolean createFile(String folderName, String fileName, String fileContent, String sender, Date sendedAt) {
-//        // Tạo file trong thư mục
-//        File folder = new File("./src/main/java/Resources/" + folderName );
-//        File file = new File(folder, fileName);
-//        try (FileWriter writer = new FileWriter(file)) {
-//            writer.write("Sender: " + sender + "\n " +fileContent);
-//            System.out.println("File created: " + file.getAbsolutePath());
-//            return true;
-//        } catch (IOException e) {
-//            System.out.println("An error occurred while creating the file.");
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
-//    
     public static Boolean createFile(String folderName, String fileName, String fileContent, String sender, Date sendedAt) {
-    // Thêm phần mở rộng .txt vào tên file
-    File folder = new File("./src/main/java/Resources/" + folderName);
-    File file = new File(folder, fileName + ".txt"); // Đổi tên file để thêm đuôi .txt
-    try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {  // Sử dụng UTF-8
-        writer.write("Sender: " + sender + "\nDate: " + sendedAt + "\n" + fileContent);
-        System.out.println("File created: " + file.getAbsolutePath());
-        return true;
-    } catch (IOException e) {
-        System.out.println("An error occurred while creating the file.");
-        e.printStackTrace();
-        return false;
+        // Tạo file trong thư mục
+        File folder = new File("./src/main/java/Resources/" + folderName );
+        File file = new File(folder, fileName);
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("Sender: " + sender + "\n " +fileContent);
+            System.out.println("File created: " + file.getAbsolutePath());
+            return true;
+        } catch (IOException e) {
+            System.out.println("An error occurred while creating the file.");
+            e.printStackTrace();
+            return false;
+        }
     }
-}
-
+    
     public static byte[] convertFileToByteArray(File file) {
         byte[] fileData = new byte[(int) file.length()];
         try (FileInputStream fis = new FileInputStream(file)) {
@@ -137,3 +123,15 @@ public class FileController {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

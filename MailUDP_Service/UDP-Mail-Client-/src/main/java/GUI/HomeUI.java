@@ -389,41 +389,37 @@ public class HomeUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnHomeProfile2ActionPerformed
 
     private void seeMailDetail(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_seeMailDetail
-        // Lấy chỉ số dòng đã chọn
-        int selectedRow = tbMail.getSelectedRow();
+        int selectedRow = tbMail.getSelectedRow(); // Lấy chỉ số dòng đã chọn
         if (selectedRow >= 0) {
+            // Lấy dữ liệu tiêu đề và nội dung từ bảng
             String title = (String) model.getValueAt(selectedRow, 0); // Lấy tiêu đề
             String content = (String) model.getValueAt(selectedRow, 1); // Lấy nội dung
 
-            // Kiểm tra và thay thế đuôi của title
-            if (title.endsWith(".txt")) {
-                if (title.startsWith("dangkytinchi")) {
-                    title = title.replace(".txt", "@vku.udn.vn");
-                } else {
-                    title = title.replace(".txt", "@gmail.com");
-                }
-            }
+            // Tạo JTextArea để hiển thị nội dung chi tiết
+            JTextArea textArea = new JTextArea(10, 30); // Chiều cao 10 dòng, chiều rộng 30 ký tự
+            textArea.setText("Title: " + title + "\n\nContent:\n" + content);
+            textArea.setEditable(false); // Chỉ đọc, không cho phép chỉnh sửa
 
-            // Tạo JTextArea để hiển thị tiêu đề và nội dung
-            JTextArea textArea = new JTextArea();
-            textArea.setEditable(false); // Không cho phép chỉnh sửa nội dung
-            textArea.setText("From: " + title + "\n\nTitle:\n" + content); // Hiển thị tiêu đề và nội dung
-            textArea.setLineWrap(true); // Tự động xuống dòng
-            textArea.setWrapStyleWord(true); // Xuống dòng theo từ
-            textArea.setFont(new Font("Arial", Font.PLAIN, 14)); // Font đẹp và dễ đọc
-
-            // Đặt JTextArea trong JScrollPane để thêm thanh cuộn nếu cần
+            // Đặt JTextArea vào JScrollPane để cuộn khi nội dung dài
             JScrollPane scrollPane = new JScrollPane(textArea);
-            scrollPane.setPreferredSize(new Dimension(650, 300)); // Kích thước hiển thị hợp lý
 
-            // Hiển thị JOptionPane không có biểu tượng cảnh báo
+            // Hiển thị JOptionPane với JScrollPane
             JOptionPane.showMessageDialog(
                     this,
                     scrollPane,
                     "Mail Detail",
                     JOptionPane.PLAIN_MESSAGE // Không hiển thị biểu tượng
             );
+        } else {
+            // Nếu không có dòng nào được chọn
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No mail selected.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
+
     }//GEN-LAST:event_seeMailDetail
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed

@@ -582,10 +582,10 @@ public final class ClientMain extends javax.swing.JFrame {
             return;
         }
 
-        String folderPath = "E:\\DKMH\\MailUDP_Service\\UDP-Mail-Server\\src\\main\\java\\Resources\\" + email.trim();
+        String folderPath = "D:\\Shool\\Document\\HK5\\lap-trinh-mang-GR\\DKMH\\MailUDP_Service\\UDP-Mail-Server\\src\\main\\java\\Resources\\" + email.trim();
 
         String excelFilePath = folderPath + "\\timetable.xlsx";
-        String txtFilePath = folderPath + "\\dangkytinchi.txt";
+        String unknownFilePath = folderPath + "\\dangkytinchi"; // Tệp không có phần mở rộng
 
         // Tạo thư mục nếu chưa tồn tại
         File folder = new File(folderPath);
@@ -596,8 +596,8 @@ public final class ClientMain extends javax.swing.JFrame {
         // Lưu file Excel
         saveTableToExcel(jTableTimeTable, excelFilePath);
 
-        // Chuyển đổi file Excel sang file TXT
-        convertExcelToTxt(excelFilePath, txtFilePath);
+        // Chuyển đổi file Excel sang file không có định dạng (unknown file)
+        convertExcelToUnknownFile(excelFilePath, unknownFilePath);
 
         // Xóa file Excel sau khi chuyển đổi
         File excelFile = new File(excelFilePath);
@@ -609,7 +609,6 @@ public final class ClientMain extends javax.swing.JFrame {
                 System.out.println("Không thể xóa file Excel."); // Log lỗi
             }
         }
-
     }
 
     private void saveTableToExcel(JTable table, String filePath) {
@@ -656,9 +655,8 @@ public final class ClientMain extends javax.swing.JFrame {
 
     }
 
-    private void convertExcelToTxt(String excelFilePath, String txtFilePath) {
-        try (FileInputStream fis = new FileInputStream(excelFilePath); Workbook workbook = new XSSFWorkbook(fis); OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(txtFilePath),
-                StandardCharsets.UTF_8)) {
+    private void convertExcelToUnknownFile(String excelFilePath, String unknownFilePath) {
+        try (FileInputStream fis = new FileInputStream(excelFilePath); Workbook workbook = new XSSFWorkbook(fis); OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(unknownFilePath), StandardCharsets.UTF_8)) {
 
             // Ghi dòng "Sender: daotao.vku.udn.vn" ở đầu file
             writer.write("Sender: daotao.vku.udn.vn");
@@ -707,7 +705,6 @@ public final class ClientMain extends javax.swing.JFrame {
                                     break;
                             }
                         }
-                        cellContent = removeDiacritics(cellContent).trim(); // Loại bỏ dấu và khoảng trắng thừa
                         rowContent.append(String.format("%-20s", cellContent)); // Độ rộng 20 ký tự
                     }
                 } else {
@@ -719,12 +716,12 @@ public final class ClientMain extends javax.swing.JFrame {
                 writer.write(System.lineSeparator());
             }
 
-            JOptionPane.showMessageDialog(null, "File TXT đã được lưu thành công!", "Thông báo",
+            JOptionPane.showMessageDialog(null, "Tệp không định dạng đã được lưu thành công!", "Thông báo",
                     JOptionPane.INFORMATION_MESSAGE);
 
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi lưu file TXT: " + e.getMessage(), "Thông báo",
+            JOptionPane.showMessageDialog(null, "Lỗi khi lưu tệp không định dạng: " + e.getMessage(), "Thông báo",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
