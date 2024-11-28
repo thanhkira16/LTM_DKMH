@@ -1,8 +1,8 @@
 package Server;
 
-import entity.Course;
-import entity.Class;
-import entity.Student;
+import Model.Course;
+import Model.Class;
+import Model.Student;
 
 import java.io.*;
 import java.net.*;

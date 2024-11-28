@@ -1,12 +1,16 @@
 package Client;
 
-import entity.Course;
+import Model.Course;
+import Model.Mail;
+import Model.Request;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -37,12 +41,17 @@ import javax.swing.JOptionPane;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
+import javax.swing.SwingUtilities;
 
 public final class ClientMain extends javax.swing.JFrame {
 
@@ -574,40 +583,64 @@ public final class ClientMain extends javax.swing.JFrame {
 
     private void jButtonRenderMouseClicked(java.awt.event.MouseEvent evt) {
         // Hiển thị popup để nhập email
-        String email = JOptionPane.showInputDialog(null, "Nhập địa chỉ email:", "Nhập Email",
+        String receiver = JOptionPane.showInputDialog(null, "Nhập địa chỉ email:", "Nhập Email",
                 JOptionPane.PLAIN_MESSAGE);
 
-        if (email == null || email.trim().isEmpty()) {
+        if (receiver == null || receiver.trim().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Email không được để trống!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String folderPath = "D:\\Shool\\Document\\HK5\\lap-trinh-mang-GR\\DKMH\\MailUDP_Service\\UDP-Mail-Server\\src\\main\\java\\Resources\\" + email.trim();
+        String title = "Thoi khoa bieu";
+        StringBuilder content = new StringBuilder();
 
-        String excelFilePath = folderPath + "\\timetable.xlsx";
-        String unknownFilePath = folderPath + "\\dangkytinchi"; // Tệp không có phần mở rộng
-
-        // Tạo thư mục nếu chưa tồn tại
-        File folder = new File(folderPath);
-        if (!folder.exists()) {
-            folder.mkdirs();
+        // Trích xuất dữ liệu từ JTable thành chuỗi
+        for (int rowIndex = 0; rowIndex < jTableTimeTable.getRowCount(); rowIndex++) {
+            for (int colIndex = 0; colIndex < jTableTimeTable.getColumnCount(); colIndex++) {
+                Object value = jTableTimeTable.getValueAt(rowIndex, colIndex);
+                content.append(value != null ? value.toString() : "").append("\t");
+            }
+            content.append("\n");
         }
 
-        // Lưu file Excel
-        saveTableToExcel(jTableTimeTable, excelFilePath);
+        // Tạo đối tượng Mail
+        Mail mail = new Mail(title, content.toString(), "test@gmail.com", receiver);
 
-        // Chuyển đổi file Excel sang file không có định dạng (unknown file)
-        convertExcelToUnknownFile(excelFilePath, unknownFilePath);
+        // Tạo Request
+        Request req = new Request("mail/send", mail);
 
-        // Xóa file Excel sau khi chuyển đổi
-        File excelFile = new File(excelFilePath);
-        if (excelFile.exists()) {
-            boolean deleted = excelFile.delete(); // Xóa file Excel
-            if (deleted) {
-                System.out.println("File Excel đã được xóa thành công!"); // Log thành công
-            } else {
-                System.out.println("Không thể xóa file Excel."); // Log lỗi
-            }
+        // Thiết lập kết nối và gửi dữ liệu qua UDP
+        try (DatagramSocket clientSocket = new DatagramSocket()) {
+            InetAddress serverAddress = InetAddress.getByName("localhost");
+
+            // Gửi request tới server
+            send(req, clientSocket, serverAddress);
+
+            // Hiển thị thông báo thành công
+            JOptionPane.showMessageDialog(null, "Dữ liệu đã được gửi tới server!", "Thông báo",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi khi gửi dữ liệu tới server: " + e.getMessage(), "Thông báo",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void send(Request req, DatagramSocket clientSocket, InetAddress serverAddress) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(req);
+            oos.flush();
+            byte[] sendData = baos.toByteArray();
+
+            // Gửi dữ liệu tới máy chủ qua UDP
+            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, serverAddress, 2023);
+            clientSocket.send(packet);
+
+            System.out.println("Đã gửi request tới server: " + req.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

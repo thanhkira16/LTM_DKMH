@@ -1,6 +1,6 @@
 package Client;
 
-import entity.Course;
+import Model.Course;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
