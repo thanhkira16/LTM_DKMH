@@ -591,7 +591,7 @@ public final class ClientMain extends javax.swing.JFrame {
             return;
         }
 
-        String title = "Thoi khoa bieu";
+        String title = "dangkytinchi";
         StringBuilder content = new StringBuilder();
 
         // Trích xuất dữ liệu từ JTable thành chuỗi

@@ -57,6 +57,7 @@ public class HomeUI extends javax.swing.JFrame {
 
     public void loadData() {
         for (Mail mail : list) {
+            System.out.println("GUI.HomeUI.loadData()"+mail);
             model.addRow(new Object[]{
                 mail.getTitle(), mail.getContent()
             });

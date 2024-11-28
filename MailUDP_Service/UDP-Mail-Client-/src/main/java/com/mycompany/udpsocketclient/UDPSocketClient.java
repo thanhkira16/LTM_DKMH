@@ -140,7 +140,9 @@ public class UDPSocketClient {
             case "mail/get" -> {
                 System.err.println("get");
                 ArrayList<Mail> files = (ArrayList<Mail>) req.getData();
+                System.err.println("files"+files);
                 ArrayList<Mail> mails = convertToMail(files);
+                System.err.println("mails"+mails);
                 SwingUtilities.invokeLater(() -> {
                      home.setList(mails);
                      
