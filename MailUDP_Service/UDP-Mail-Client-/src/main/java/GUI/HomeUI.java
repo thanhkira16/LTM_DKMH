@@ -79,6 +79,7 @@ public class HomeUI extends javax.swing.JFrame {
         btnHomeHome = new javax.swing.JButton();
         btnHomeSend = new javax.swing.JButton();
         btnHomeProfile = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbMail = new javax.swing.JTable();
@@ -158,6 +159,14 @@ public class HomeUI extends javax.swing.JFrame {
             }
         });
         jPanel3.add(btnHomeProfile);
+
+        jButton1.setText("COPY TOKEN");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+        jPanel3.add(jButton1);
 
         pnHome.add(jPanel3, java.awt.BorderLayout.PAGE_END);
 
@@ -408,7 +417,7 @@ public class HomeUI extends javax.swing.JFrame {
             // Đặt JTextArea vào JScrollPane để cuộn khi nội dung dài
             JScrollPane scrollPane = new JScrollPane(textArea);
             scrollPane.setPreferredSize(new Dimension(400, 300)); // Chiều rộng 400, chiều cao 300
-            
+
             // Hiển thị JOptionPane với JScrollPane
             JOptionPane.showMessageDialog(
                     this,
@@ -496,6 +505,25 @@ public class HomeUI extends javax.swing.JFrame {
         send(r, clientSocket, serverAddress);
     }//GEN-LAST:event_btnHomeProfileMouseClicked
 
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        // Lấy token từ Account
+        String token = acc.getToken(); // Đảm bảo rằng `acc` đã được khởi tạo trước đó
+
+        // Kiểm tra nếu token không null
+        if (token != null && !token.isEmpty()) {
+            // Sao chép token vào clipboard
+            java.awt.datatransfer.StringSelection stringSelection = new java.awt.datatransfer.StringSelection(token);
+            java.awt.datatransfer.Clipboard clipboard = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(stringSelection, null);
+
+            // Hiển thị hộp thoại thông báo
+            javax.swing.JOptionPane.showMessageDialog(this, "Token đã được sao chép thành công!", "Thông báo", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Thông báo lỗi nếu token rỗng hoặc null
+            javax.swing.JOptionPane.showMessageDialog(this, "Không có token để sao chép!", "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton1MouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -543,6 +571,7 @@ public class HomeUI extends javax.swing.JFrame {
     private javax.swing.JButton btnHomeSend2;
     private javax.swing.JButton btnOpen;
     private javax.swing.JButton btnSend;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

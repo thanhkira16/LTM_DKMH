@@ -17,7 +17,8 @@ public class Account implements Serializable{
     private String email;
     private String username;
     private String pass;
-
+    private String token;
+    
     public Account() {
     }
 
@@ -37,6 +38,13 @@ public class Account implements Serializable{
         this.email = email;
         this.username = username;
         this.pass = pass;
+    }
+    
+    public Account(int ID, String email, String username, String token) {
+        this.ID = ID;
+        this.email = email;
+        this.username = username;
+        this.token = token;
     }
 
     public int getID() {
@@ -71,6 +79,12 @@ public class Account implements Serializable{
         this.pass = pass;
     }
     
-    
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
     
 }
