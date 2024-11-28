@@ -170,6 +170,16 @@ public class UDPSocketServer {
                 response = new Request("mail/get", files);
                 break;
             }
+            
+            case "mail/token" -> {
+                Boolean result = AccountController.validateToken(req.getAccount());
+                if(result){
+                    response = new Request("validToken");
+                }else{
+                     response = new Request("invalidToken");
+                }
+                break;
+            }
         }
         return response;
     }

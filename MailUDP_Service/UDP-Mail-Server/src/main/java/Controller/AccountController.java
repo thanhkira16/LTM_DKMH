@@ -79,7 +79,31 @@ public class AccountController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }   
+    
+    public static boolean validateToken(Account acc) {
+    String selectSQL = "SELECT * FROM account WHERE email = ? AND token = ?";
+    try (Connection conn = openConnection(); PreparedStatement pstmt = conn.prepareStatement(selectSQL)) {
+        // Gán giá trị đầu vào vào câu lệnh SQL
+        pstmt.setString(1, acc.getEmail());
+        pstmt.setString(2, acc.getToken());
+
+        // Thực thi truy vấn
+        ResultSet rs = pstmt.executeQuery();
+
+        // Kiểm tra xem có dòng nào trả về hay không
+        if (rs.next()) {
+            // Email và token hợp lệ
+            return true;
+        } else {
+            // Email hoặc token không hợp lệ
+            return false;
+        }
+    } catch (SQLException e) {
+        throw new RuntimeException("Error validating account", e);
     }
+}
+
 
     private static String hashPass(String pass) {
         try {
@@ -97,5 +121,5 @@ public class AccountController {
             throw new RuntimeException("Error hashing data", e);
         }
     }
-
+    
 }

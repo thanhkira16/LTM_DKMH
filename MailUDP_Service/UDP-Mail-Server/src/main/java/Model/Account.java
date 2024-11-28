@@ -10,7 +10,8 @@ import java.io.Serializable;
  *
  * @author iemmeiemi
  */
-public class Account implements Serializable{
+public class Account implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private int ID;
@@ -18,7 +19,8 @@ public class Account implements Serializable{
     private String username;
     private String pass;
     private String token;
-    
+    private int credits;
+
     public Account() {
     }
 
@@ -33,18 +35,23 @@ public class Account implements Serializable{
         this.username = username;
     }
 
-    
     public Account(String email, String username, String pass) {
         this.email = email;
         this.username = username;
         this.pass = pass;
     }
-    
+
     public Account(int ID, String email, String username, String token) {
         this.ID = ID;
         this.email = email;
         this.username = username;
         this.token = token;
+    }
+
+    public Account(String email, String token, int credits) {
+        this.email = email;
+        this.token = token;
+        this.credits = credits;
     }
 
     public int getID() {
@@ -54,7 +61,7 @@ public class Account implements Serializable{
     public void setID(int ID) {
         this.ID = ID;
     }
-    
+
     public String getEmail() {
         return email;
     }
@@ -78,7 +85,7 @@ public class Account implements Serializable{
     public void setPass(String pass) {
         this.pass = pass;
     }
-    
+
     public String getToken() {
         return token;
     }
@@ -86,5 +93,5 @@ public class Account implements Serializable{
     public void setToken(String token) {
         this.token = token;
     }
-    
+
 }
