@@ -57,7 +57,6 @@ public class HomeUI extends javax.swing.JFrame {
 
     public void loadData() {
         for (Mail mail : list) {
-            System.out.println("GUI.HomeUI.loadData()"+mail);
             model.addRow(new Object[]{
                 mail.getTitle(), mail.getContent()
             });
@@ -152,7 +151,12 @@ public class HomeUI extends javax.swing.JFrame {
         });
         jPanel3.add(btnHomeSend);
 
-        btnHomeProfile.setText("PROFILE");
+        btnHomeProfile.setText("RELOAD");
+        btnHomeProfile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnHomeProfileMouseClicked(evt);
+            }
+        });
         jPanel3.add(btnHomeProfile);
 
         pnHome.add(jPanel3, java.awt.BorderLayout.PAGE_END);
@@ -403,7 +407,8 @@ public class HomeUI extends javax.swing.JFrame {
 
             // Đặt JTextArea vào JScrollPane để cuộn khi nội dung dài
             JScrollPane scrollPane = new JScrollPane(textArea);
-
+            scrollPane.setPreferredSize(new Dimension(400, 300)); // Chiều rộng 400, chiều cao 300
+            
             // Hiển thị JOptionPane với JScrollPane
             JOptionPane.showMessageDialog(
                     this,
@@ -485,6 +490,11 @@ public class HomeUI extends javax.swing.JFrame {
     private void btnHomeProfile1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHomeProfile1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnHomeProfile1ActionPerformed
+
+    private void btnHomeProfileMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnHomeProfileMouseClicked
+        Request r = new Request("mail/get", acc.getEmail());
+        send(r, clientSocket, serverAddress);
+    }//GEN-LAST:event_btnHomeProfileMouseClicked
 
     /**
      * @param args the command line arguments

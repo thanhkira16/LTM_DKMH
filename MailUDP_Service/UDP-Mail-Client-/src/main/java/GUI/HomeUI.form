@@ -86,8 +86,11 @@
             </Component>
             <Component class="javax.swing.JButton" name="btnHomeProfile">
               <Properties>
-                <Property name="text" type="java.lang.String" value="PROFILE"/>
+                <Property name="text" type="java.lang.String" value="RELOAD"/>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnHomeProfileMouseClicked"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

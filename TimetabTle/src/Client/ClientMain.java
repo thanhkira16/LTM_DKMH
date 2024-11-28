@@ -594,7 +594,14 @@ public final class ClientMain extends javax.swing.JFrame {
         String title = "dangkytinchi";
         StringBuilder content = new StringBuilder();
 
-        // Trích xuất dữ liệu từ JTable thành chuỗi
+        // **1. Ghi tiêu đề cột**
+        for (int colIndex = 0; colIndex < jTableTimeTable.getColumnCount(); colIndex++) {
+            String columnName = jTableTimeTable.getColumnName(colIndex);
+            content.append(columnName).append("\t"); // Ngăn cách bằng tab
+        }
+        content.append("\n");
+
+        // **2. Trích xuất dữ liệu từ JTable**
         for (int rowIndex = 0; rowIndex < jTableTimeTable.getRowCount(); rowIndex++) {
             for (int colIndex = 0; colIndex < jTableTimeTable.getColumnCount(); colIndex++) {
                 Object value = jTableTimeTable.getValueAt(rowIndex, colIndex);
@@ -604,7 +611,7 @@ public final class ClientMain extends javax.swing.JFrame {
         }
 
         // Tạo đối tượng Mail
-        Mail mail = new Mail(title, content.toString(), "test@gmail.com", receiver);
+        Mail mail = new Mail(title, content.toString(), "vku@gmail.com", receiver);
 
         // Tạo Request
         Request req = new Request("mail/send", mail);
@@ -642,128 +649,6 @@ public final class ClientMain extends javax.swing.JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void saveTableToExcel(JTable table, String filePath) {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Thời Khóa Biểu");
-
-        // Ghi tiêu đề cột
-        Row headerRow = sheet.createRow(0);
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            Cell cell = headerRow.createCell(i);
-            cell.setCellValue(table.getColumnName(i));
-        }
-
-        // Ghi dữ liệu từng dòng
-        for (int rowIndex = 0; rowIndex < table.getRowCount(); rowIndex++) {
-            Row row = sheet.createRow(rowIndex + 1);
-            for (int colIndex = 0; colIndex < table.getColumnCount(); colIndex++) {
-                Cell cell = row.createCell(colIndex);
-                Object value = table.getValueAt(rowIndex, colIndex);
-                if (value != null) {
-                    if (value instanceof Number) {
-                        cell.setCellValue(((Number) value).doubleValue());
-                    } else {
-                        cell.setCellValue(value.toString());
-                    }
-                }
-            }
-        }
-
-        try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
-            workbook.write(fileOut);
-            System.out.println("File Excel đã được lưu thành công!"); // Log thành công
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Lỗi khi lưu file Excel: " + e.getMessage()); // Log lỗi
-        } finally {
-            try {
-                workbook.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Lỗi khi đóng workbook: " + e.getMessage()); // Log lỗi khi đóng workbook
-            }
-        }
-
-    }
-
-    private void convertExcelToUnknownFile(String excelFilePath, String unknownFilePath) {
-        try (FileInputStream fis = new FileInputStream(excelFilePath); Workbook workbook = new XSSFWorkbook(fis); OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(unknownFilePath), StandardCharsets.UTF_8)) {
-
-            // Ghi dòng "Sender: daotao.vku.udn.vn" ở đầu file
-            writer.write("Sender: daotao.vku.udn.vn");
-            writer.write(System.lineSeparator());
-            writer.write(System.lineSeparator()); // Dòng trống để tách tiêu đề
-
-            Sheet sheet = workbook.getSheetAt(0); // Đọc sheet đầu tiên
-
-            // Đếm số cột
-            int numCols = 0;
-            Row headerRow = sheet.getRow(0);
-            if (headerRow != null) {
-                numCols = headerRow.getLastCellNum(); // Tổng số cột
-            }
-
-            // Ghi dòng tiêu đề
-            StringBuilder headerContent = new StringBuilder();
-            for (Cell cell : headerRow) {
-                String cellContent = removeDiacritics(cell.getStringCellValue());
-                headerContent.append(String.format("%-20s", cellContent)); // Căn lề trái, độ rộng 20
-            }
-            writer.write(headerContent.toString().trim());
-            writer.write(System.lineSeparator());
-
-            // Ghi dữ liệu từng dòng
-            for (int rowIndex = 1; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
-                Row row = sheet.getRow(rowIndex);
-                StringBuilder rowContent = new StringBuilder();
-                if (row != null) {
-                    for (int colIndex = 0; colIndex < numCols; colIndex++) {
-                        Cell cell = row.getCell(colIndex);
-                        String cellContent = "";
-                        if (cell != null) {
-                            switch (cell.getCellType()) {
-                                case STRING:
-                                    cellContent = cell.getStringCellValue();
-                                    break;
-                                case NUMERIC:
-                                    cellContent = String.valueOf(cell.getNumericCellValue());
-                                    break;
-                                case BOOLEAN:
-                                    cellContent = String.valueOf(cell.getBooleanCellValue());
-                                    break;
-                                case FORMULA:
-                                    cellContent = cell.getCellFormula();
-                                    break;
-                            }
-                        }
-                        rowContent.append(String.format("%-20s", cellContent)); // Độ rộng 20 ký tự
-                    }
-                } else {
-                    for (int colIndex = 0; colIndex < numCols; colIndex++) {
-                        rowContent.append(String.format("%-20s", "")); // Thêm ô trống
-                    }
-                }
-                writer.write(rowContent.toString().trim());
-                writer.write(System.lineSeparator());
-            }
-
-            JOptionPane.showMessageDialog(null, "Tệp không định dạng đã được lưu thành công!", "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi khi lưu tệp không định dạng: " + e.getMessage(), "Thông báo",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // Hàm loại bỏ dấu tiếng Việt
-    private String removeDiacritics(String input) {
-        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        return pattern.matcher(normalized).replaceAll("").replaceAll("Đ", "D").replaceAll("đ", "d");
     }
 
     private void jButtonSearchMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jButtonSearchMouseClicked
