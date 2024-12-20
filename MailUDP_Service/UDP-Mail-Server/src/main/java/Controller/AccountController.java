@@ -81,6 +81,7 @@ public class AccountController {
         }
     }   
     
+    // Ma hoa tin nhan luu o server 
     public static boolean validateToken(Account acc) {
     String selectSQL = "SELECT * FROM account WHERE email = ? AND token = ?";
     try (Connection conn = openConnection(); PreparedStatement pstmt = conn.prepareStatement(selectSQL)) {
