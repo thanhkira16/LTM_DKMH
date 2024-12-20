@@ -4,19 +4,6 @@
 
 package com.mycompany.udpsocketclient;
 
-import GUI.ClientUI;
-import GUI.HomeUI;
-import Model.Account;
-import Model.Mail;
-import Model.Request;
-import java.io.*;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
 
 public class UDPSocketClient {
     
