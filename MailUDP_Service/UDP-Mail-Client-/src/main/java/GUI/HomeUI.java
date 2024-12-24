@@ -206,6 +206,11 @@ public class HomeUI extends javax.swing.JFrame {
 
         btnOpen.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnOpen.setText("OPEN MAIL");
+        btnOpen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenActionPerformed(evt);
+            }
+        });
         jPanel4.add(btnOpen, java.awt.BorderLayout.PAGE_END);
 
         pnHome.add(jPanel4, java.awt.BorderLayout.CENTER);
@@ -523,6 +528,10 @@ public class HomeUI extends javax.swing.JFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "Không có token để sao chép!", "Lỗi", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void btnOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnOpenActionPerformed
 
     /**
      * @param args the command line arguments
