@@ -448,6 +448,14 @@ public final class ClientMain extends javax.swing.JFrame {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButtonRenderMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jButtonRenderMouseEntered(evt);
+            }
+        });
+        jButtonRender.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonRenderActionPerformed(evt);
+            }
         });
 
         lblName.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -526,6 +534,14 @@ public final class ClientMain extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButtonRenderMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonRenderMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonRenderMouseEntered
+
+    private void jButtonRenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRenderActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonRenderActionPerformed
 
     private void jLabelLogoutMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jLabelLogoutMouseClicked
         int confirm = JOptionPane.showConfirmDialog(this,
