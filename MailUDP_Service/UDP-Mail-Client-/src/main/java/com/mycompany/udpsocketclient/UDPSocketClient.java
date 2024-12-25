@@ -26,7 +26,7 @@ public class UDPSocketClient {
         InetAddress serverAddress;
         
         try {
-             serverAddress = InetAddress.getByName("localhost");
+             serverAddress = InetAddress.getByName("172.16.0.234");
              final DatagramSocket clientSocket = new DatagramSocket();
              SwingUtilities.invokeLater(() -> {
                 loginFrame = new ClientUI(clientSocket, serverAddress);
