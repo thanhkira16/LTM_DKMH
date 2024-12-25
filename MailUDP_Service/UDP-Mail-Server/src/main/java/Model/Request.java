@@ -9,7 +9,8 @@ public class Request implements Serializable{
     private static final long serialVersionUID = 1L;
     private String message;
     private Object data;
-
+    private byte[] digitalSignature;  
+    
     public Request() {
     }
     
@@ -41,4 +42,12 @@ public class Request implements Serializable{
     public String getMessage() {
         return message;
     } 
+    
+     public byte[] getDigitalSignature() {
+        return digitalSignature;
+    }
+
+    public void setDigitalSignature(byte[] digitalSignature) {
+        this.digitalSignature = digitalSignature;
+    }
 }

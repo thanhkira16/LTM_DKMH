@@ -6,8 +6,13 @@ package Controller;
 
 import static Controller.DBConnection.openConnection;
 import Model.Account;
+import java.io.File;
+import java.nio.file.Files;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -121,6 +126,24 @@ public class AccountController {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("Error hashing data", e);
         }
+    }
+    
+      // Phương thức lấy khóa công khai của người dùng từ email
+    public static PublicKey getPublicKeyByEmail(String email) {
+        // Giả sử bạn lưu trữ khóa công khai trong tệp tin với tên email
+        try {
+            File file = new File("public_keys/" + email + ".pub");
+            if (file.exists()) {
+                // Đọc tệp khóa công khai
+                byte[] keyBytes = Files.readAllBytes(file.toPath());
+                X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+                KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+                return keyFactory.generatePublic(keySpec);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;  // Trả về null nếu không tìm thấy khóa công khai
     }
     
 }

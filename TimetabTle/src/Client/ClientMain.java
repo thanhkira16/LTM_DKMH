@@ -49,14 +49,23 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.Normalizer;
+import java.util.Base64;
 import java.util.regex.Pattern;
+import javax.crypto.SecretKey;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import utils.AESUtils;
+import utils.Base64Utils;
+import utils.DigitalSignatureUtils;
+import utils.KeyUtils;
 
 public final class ClientMain extends javax.swing.JFrame {
 
@@ -565,7 +574,7 @@ public final class ClientMain extends javax.swing.JFrame {
     }// GEN-LAST:event_jLabelDKMouseClicked
 
     private void jButtonRenderMouseClicked(java.awt.event.MouseEvent evt) {
-// Tạo JPanel để chứa 2 JTextField cho email và token
+        // Tạo JPanel để chứa 2 JTextField cho email và token
         JPanel panel = new JPanel(new GridLayout(2, 2)); // 2 dòng và 2 cột
 
         // Tạo các JLabel và JTextField cho email và token
@@ -635,11 +644,39 @@ public final class ClientMain extends javax.swing.JFrame {
                 // Tạo Request gửi mail
                 Request mailRequest = new Request("mail/send", mail);
 
-                // Gửi mail
-                send(mailRequest);
+                // Mã hóa nội dung email bằng AES
+                try {
+                    // Tạo AES Key ngẫu nhiên
+                    SecretKey aesKey = AESUtils.generateKey();
 
-                // Hiển thị thông báo gửi mail thành công
-                JOptionPane.showMessageDialog(null, "Dữ liệu đã được gửi tới server!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    // Mã hóa nội dung thư
+                    byte[] encryptedContent = AESUtils.encrypt(mail.getContent().getBytes(), aesKey);
+
+                    // Tạo cặp khóa RSA
+                    KeyPair keyPair = KeyUtils.generateKeyPair();
+                    PublicKey recipientPublicKey = KeyUtils.getPublicKey(keyPair);  // Public key của người nhận
+                    PrivateKey privateKey = KeyUtils.getPrivateKey(keyPair);  // Private key của bạn
+
+                    // Mã hóa AES Key bằng khóa công khai
+                    byte[] encryptedAesKey = DigitalSignatureUtils.encryptKeyWithPublicKey(aesKey, recipientPublicKey);
+
+                    // Tạo chữ ký số cho AES Key (bằng khóa riêng của bạn)
+                    byte[] signature = DigitalSignatureUtils.signAESKey(aesKey, privateKey);
+
+                    // Cập nhật nội dung mã hóa và thông tin bảo vệ cho mail
+                    mail.setContent(Base64Utils.encode(encryptedContent));
+                    mail.setByteContent(encryptedAesKey);  // Đặt khóa AES đã mã hóa
+                    mail.setPath(Base64Utils.encode(signature));  // Chữ ký số
+
+                    // Gửi mail đã mã hóa
+                    send(mailRequest);
+                    System.out.println("Client.ClientMain.jButtonRenderMouseClicked()" + mailRequest);
+                    // Hiển thị thông báo gửi mail thành công
+                    JOptionPane.showMessageDialog(null, "Dữ liệu đã được gửi tới server!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Có lỗi khi mã hóa nội dung mail!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
             } else if ("invalidToken".equals(response.getMessage())) {
                 // Token không hợp lệ, hiển thị thông báo lỗi
                 JOptionPane.showMessageDialog(null, "Token không hợp lệ!", "Thông báo", JOptionPane.ERROR_MESSAGE);
@@ -647,9 +684,9 @@ public final class ClientMain extends javax.swing.JFrame {
         }
     }
 
-    // Phương thức gửi Request
     public void send(Request req) {
         try {
+            // Mã hóa đối tượng Request (đã được mã hóa AES và bảo vệ khóa bằng chữ ký số)
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(req);
@@ -666,7 +703,6 @@ public final class ClientMain extends javax.swing.JFrame {
         }
     }
 
-// Phương thức nhận phản hồi từ server
     public Request receiveResponse() {
         try {
             // Tạo buffer để nhận dữ liệu
@@ -689,23 +725,6 @@ public final class ClientMain extends javax.swing.JFrame {
         }
     }
 
-//    public static void send(Request req, DatagramSocket clientSocket, InetAddress serverAddress) {
-//        try {
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            ObjectOutputStream oos = new ObjectOutputStream(baos);
-//            oos.writeObject(req);
-//            oos.flush();
-//            byte[] sendData = baos.toByteArray();
-//
-//            // Gửi dữ liệu tới máy chủ qua UDP
-//            DatagramPacket packet = new DatagramPacket(sendData, sendData.length, serverAddress, 2023);
-//            clientSocket.send(packet);
-//
-//            System.out.println("Đã gửi request tới server: " + req.getMessage());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
     private void jButtonSearchMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jButtonSearchMouseClicked
         String searchText = jTextFieldInput.getText().toLowerCase();
         DefaultTableModel model = (DefaultTableModel) jTableCourses.getModel();
