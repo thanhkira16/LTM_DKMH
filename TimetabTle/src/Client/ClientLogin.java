@@ -122,7 +122,7 @@ public class ClientLogin extends javax.swing.JFrame {
 
         try {
             int portNumber = Integer.parseInt(port);
-            Socket socket = new Socket("192.168.145.37", portNumber);
+            Socket socket = new Socket("192.168.1.8", portNumber);
 
             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
