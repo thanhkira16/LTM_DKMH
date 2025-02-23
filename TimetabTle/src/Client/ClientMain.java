@@ -68,7 +68,7 @@ public final class ClientMain extends javax.swing.JFrame {
         try {
             // Tạo socket và địa chỉ máy chủ
             clientSocket = new DatagramSocket();
-            serverAddress = InetAddress.getByName("localhost");
+            serverAddress = InetAddress.getByName("192.168.145.37");
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Lỗi khi khởi tạo kết nối: " + e.getMessage(), "Thông báo", JOptionPane.ERROR_MESSAGE);
