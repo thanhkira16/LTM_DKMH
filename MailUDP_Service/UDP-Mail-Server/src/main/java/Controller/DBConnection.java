@@ -45,9 +45,9 @@ public class DBConnection {
 
 
     public static Connection openConnection() throws SQLException {
-         String URL = "jdbc:mysql://52.72.242.225:3306/UDPMailServer";
+         String URL = "jdbc:mysql://localhost:3306/UDPMailServer";
          String USER = "root"; // Tên người dùng
-         String PASSWORD = "123456"; // Mật khẩu
+         String PASSWORD = ""; // Mật khẩu
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 

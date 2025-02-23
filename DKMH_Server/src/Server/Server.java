@@ -12,9 +12,9 @@ import java.util.List;
 
 public class Server {
     private static final int PORT = 3333;
-    private static final String URL = "jdbc:mysql://52.72.242.225:3306/studentdb";
+    private static final String URL = "jdbc:mysql://localhost:3306/studentdb";
     private static final String USER = "root";
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "";
     private static ClientLogger logger = new ClientLogger();
 
     public static void main(String[] args) {
